@@ -1,0 +1,210 @@
+-------------------------------------------------------------------------------
+
+            +-------------------------+
+            | CS 450                  |
+            | PROJECT: Page Table Sim |
+            | DESIGN DOCUMENT         |
+            +-------------------------+
+
+---- GROUP ----
+
+>> Fill in the names and email addresses of your group members.
+
+Michael Krent <krentm@sonoma.edu>
+Andrew McKernan <mckernana@sonoma.edu>
+Nicholas Uribe <uriben@sonoma.edu>
+
+---- PRELIMINARIES ----
+
+>> If you have any preliminary comments on your submission, notes for the
+>> TAs, or extra credit, please give them here.
+
+>> Please cite any offline or online sources you consulted while
+>> preparing your submission, other than the Pintos documentation, course
+>> text, lecture notes, and course staff.
+
+               PAGE TABLE SIMULATOR
+               ====================
+
+---- DATA STRUCTURES ----
+
+>> A1: Copy here the declaration of each new `struct',
+>> `struct' member, global or static variable, `typedef',
+>> enumeration, or classes. Identify the purpose of each 
+>> in 25 words or less.
+
+f = open(sys.argv[1],"r")	#lets us read the input file
+base = f.readline()                  #reads table header for table info
+end = int(base[2])		#keeps track of whether there are still numbers to read from file
+length = 0		#stores length of page offset for address conversions
+index = 0		#keeps track of which row in the table we’re looking at
+input_val = int(line,16)  #stores numbers read from input file
+virtual = input_val >> length #stores page table row number to look at for address translation
+physical = table[virtual][2] #frame number to insert into virtual address to convert to physical
+output_val = input_val - (virtual << length) #stores the new physical address
+
+
+
+---- FUNCTIONS ----
+
+>> A2. List the function prototype and full documentation for each function
+>> you have introduced to support Part A of the project.
+>> Use the appropriate Google Style Guide for function documentation.
+>> For C/C++:
+>> google.github.io/styleguide/cppguide.html#Function_Comments
+>> For Python:
+>> google.github.io/styleguide/pyguide.html#s3.8.3-functions-and-methods
+
+def main(argv):
+“””Converts virtual address to physical address.
+
+Args:
+Argv: input arguments, including (in order) a text file representing the table header, a text file containing the list of addresses to convert
+Returns:
+	Nothing; Prints out the translated addresses
+Raises:
+	None
+“””
+
+---- ALGORITHMS ----
+
+>> A3. Given the following description of a page table:
+>>
+>> 7 8 32
+>> 0 1 0 0
+>> 1 1 4 0
+>> 1 1 5 1
+>> 1 1 2 0
+>>
+>> Translate the following sequence of address requests using the method
+>> described for Part A.
+>>
+>> 0x05
+>> 0x7F
+>> 0x3B
+>> 0x7F
+>> 0x40
+>>
+
+DISK
+0x5f
+0x9b
+0x5f
+0xa0
+
+>> A4. Give a computation you can use to determine how many rows to read
+>> while injesting the page table. It is ok if your program just reads
+>> every row, but its possible to compute how many rows there should be.
+	
+	You can determine how many rows are to be read in the page table by first finding the number of bits used for the page offset, subtract that from the number of bits in a virtual address, and using that as an exponent of 2 to find the number of rows in the table.
+
+>> A5. Describe your general strategy for managing bit-wise transformations
+>> of data, and relevant support functions you used to accomplish this.
+	
+The general strategy was to use bitwise shifts to shift the virtual address into the
+	physical address. Relevant operators used include << and >> to shift the address n bits
+	to the right or left.
+
+
+
+               CLOCK REPLACEMENT SIMULATOR
+               ===========================
+
+---- DATA STRUCTURES ----
+
+>> B1: Copy here the declaration of each new `struct',
+>> `struct' member, global or static variable, `typedef',
+>> enumeration, or classes. Identify the purpose of each 
+>> in 25 words or less.
+
+clock		#lets us know if we are going to have a pagefault and need to modify page table
+temp = table[virtual][2]	# used to store the virtual value before assigning the new value
+
+
+
+
+---- FUNCTIONS ----
+
+>> B2. List the function prototype and full documentation for each function
+>> you have introduced to support Part A of the project.
+>> Again, use the appropriate Google Style Guide for function documentation.
+
+def main(argv):
+“””Converts virtual address to physical address, either via Part A’s algorithm or thought the use of the clock page replacement algorithm.
+
+Args:
+Argv: input arguments, including (in order) a text file representing the table header, a text file containing the list of addresses to convert, and a binary number to signal whether or not we want to use clock page replacement to convert the address (1 is a yes, 0 is a no).
+Returns:
+	Nothing; Prints out the translated addresses.
+Raises:
+	None
+“””
+
+
+
+---- ALGORITHMS ----
+
+>> B3. Given the following description of a page table:
+>>
+>> 7 8 32
+>> 0 1 0 0
+>> 1 1 4 0
+>> 1 1 5 1
+>> 1 1 2 0
+>>
+>> Translate the following sequence of address requests using the method
+>> described for Part B.
+>>
+>> 0x05
+>> 0x7F
+>> 0x3B
+>> 0x7F
+>> 0x40
+>>
+
+PAGEFAULT 0x85
+0x5F
+PAGEFAULT 0xBB
+0x5F
+PAGEFAULT 0x80
+
+
+>> B4. Describe the data structure you used to search through the frames
+>> following the clock rotation, and how you might improve efficiency
+>> if this was an implementation rather than a simulation.
+
+We did not really use any user defined data structures in order to search through the frames. However, one way that we would be able to improve efficiency if this was an implementation rather than a simulation would be to use a systems programming language. There is a lot of unnecessary overhead as well as additional steps associated with using a programming language like python for this application.
+
+
+>> B5. Did you need to handle any ambiguous scenarios or corner cases 
+>> for the Clock algorithm, left unspecified in the algorithm's description?
+>> Explain any judgements you used in implementing unclear or 
+>> unspecified behavior.
+We were unsure what to do with the frame number in invalid frames when making them valid by giving them the frame number of another row. We swapped the values rather than simply overwriting it, just in case.
+
+
+
+               SURVEY QUESTIONS
+               ================
+
+Answering these questions is optional, but it will help us improve the
+course in future quarters.  Feel free to tell us anything you
+want--these questions are just to spur your thoughts.  You may also
+choose to respond anonymously in the course evaluations at the end of
+the quarter.
+
+>> In your opinion, was this assignment, or any one of the problems
+>> in it, too easy or too hard?  Did it take too long or too little time?
+It felt about right for the time frame.
+
+>> Did you find that working on a particular part of the assignment gave
+>> you greater insight into some aspect of OS design?
+It definitely helped with understanding the clock algorithm and page addressing in general.
+
+>> Is there some particular fact or hint we should give students in
+>> future quarters to help them solve the problems?  Conversely, did you
+>> find any of our guidance to be misleading?
+It took me a bit to realize that you needed to swap in and overwrite the frame number value when changing which table entries are valid, until it was covered in a later video.
+
+>> Any other comments?
+

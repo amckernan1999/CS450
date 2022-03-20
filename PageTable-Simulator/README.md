@@ -1,4 +1,7 @@
 # pt-sim
+Author: Andrew McKernan
+
+Summary: This projects simulates a page table using clock management, sceduling, and process management.
 
 Tests and resources for the PT-sim project.
 
